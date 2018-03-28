@@ -1,10 +1,14 @@
 PODS:
+  - ActiveLabel (0.8.1)
+  - Kingfisher (4.6.4)
   - RxCocoa (4.1.2):
     - RxSwift (~> 4.0)
   - RxSwift (4.1.2)
   - Swifter (2.1.0)
 
 DEPENDENCIES:
+  - ActiveLabel (~> 0.8.1)
+  - Kingfisher (~> 4.6.2)
   - RxCocoa (~> 4.1.2)
   - RxSwift (~> 4.1.2)
   - Swifter (from `https://github.com/mattdonnelly/Swifter.git`)
@@ -19,10 +23,12 @@ CHECKOUT OPTIONS:
     :git: https://github.com/mattdonnelly/Swifter.git
 
 SPEC CHECKSUMS:
+  ActiveLabel: e361127c355b911a467db3d5a897b3d7f902e568
+  Kingfisher: 68498a706e46c2a050b0c9572f100e5db407f6e0
   RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
   RxSwift: e49536837d9901277638493ea537394d4b55f570
   Swifter: bbf4ebde56c9f8c13e6c7270bf6841a5f29dfda3
 
-PODFILE CHECKSUM: 3646ad6c484582bb8281269debcb03889b55068c
+PODFILE CHECKSUM: 3098119d94d1b4fb13037371fefb06a600f76e7e
 
 COCOAPODS: 1.3.1

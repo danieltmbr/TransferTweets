@@ -15,13 +15,13 @@ final class AppCoordinator: Coordinator {
 
     let identifier: UUID = UUID()
 
-    private var children = [UUID: Coordinator]()
-
     private let window: UIWindow
 
     private let authInfo: AuthInfo
 
     private let disposeBag = DisposeBag()
+
+    private var children = [UUID: Coordinator]()
 
     // MARK: - Initialisation
 
@@ -30,7 +30,7 @@ final class AppCoordinator: Coordinator {
         self.authInfo = authInfo
     }
 
-    // MARK: - Public methodsr
+    // MARK: - Public methods
 
     func start() {
         setupBidings()
@@ -40,20 +40,23 @@ final class AppCoordinator: Coordinator {
     // MARK: - Private methods
 
     private func setupBidings() {
-        authInfo.isAuthenticated
-            .catchErrorJustReturn(false)
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] (isAuthenticated) in
-                self?.route(isAuthenticated: isAuthenticated)
+        authInfo.authentication
+            .catchErrorJustReturn(.none)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (authentication) in
+                self?.route(authentication)
             })
             .disposed(by: disposeBag)
     }
 
-    private func route(isAuthenticated: Bool) {
+    private func route(_ authentication: Authentication) {
         children.removeAll()
-        let coordinator: Coordinator = isAuthenticated
-            ? AuthCoordinator(window: window)
-            : FeedCoordinator(window: window)
+        let coordinator: Coordinator
+        if case .token(let accessToken) = authentication {
+            coordinator = FeedCoordinator(window: window, accessToken: accessToken)
+        } else {
+            coordinator = AuthCoordinator(window: window)
+        }
         children[coordinator.identifier] = coordinator
         coordinator.start()
     }

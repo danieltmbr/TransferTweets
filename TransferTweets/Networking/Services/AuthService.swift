@@ -45,10 +45,10 @@ extension TwitterAuthService: AuthService {
                     guard let token = token
                         else { return observer.onError(TwitterAuthError.noAccessToken) }
                     observer.onNext(token)
-                },
-                failure: {  observer.onError($0) }
-            )
+            },
+                failure: {  observer.onError($0) })
             return Disposables.create()
-        }
+            }
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
     }
 }

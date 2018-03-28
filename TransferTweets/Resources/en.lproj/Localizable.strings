@@ -6,6 +6,15 @@
   Copyright © 2018. danieltmbr. All rights reserved.
 */
 
+// MARK: - Auth
+
+"Login with Twitter" = "Login with Twitter";
+
+// MARK: - Feed
+
+"Transfer Tweets" = "Transfer Tweets";
+"Logout" = "Logout";
+
 // MARK: - Errors
 
 "error.default.title" = "We're really sorry, but";

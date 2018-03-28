@@ -16,25 +16,34 @@ final class FeedCoordinator: Coordinator {
 
     let identifier: UUID = UUID()
 
-    private var children = [UUID: Coordinator]()
+    private let accessToken: OauthAccessToken
 
     private let window: UIWindow
 
+    private var children = [UUID: Coordinator]()
+
     // MARK: - Initialisation
 
-    init(window: UIWindow) {
+    init(window: UIWindow, accessToken: OauthAccessToken) {
         self.window = window
+        self.accessToken = accessToken
     }
 
-    // MARK: - Public methodsr
+    // MARK: - Public methods
 
     func start() {
-//        let authService = TwitterAuthService(
-//            consumerKey: "QQt2eDN6L3sJg0ewa7alDRqAq",
-//            consumerSecret: "juLldKBdnoY3Sqj8FsRWCAlEurtNe1n0u6FQRywcojabPRpNVB"
-//        )
-//        let authViewModel = TwitterAuthViewModel(service: authService)
-//        window.rootViewController = AuthViewController(with: authViewModel)
+        let feedService = TwitterFeedService(
+            consumerKey: TwitterConsumerInfo.key,
+            consumerSecret: TwitterConsumerInfo.secret,
+            oauthToken: accessToken.accessToken,
+            oauthTokenSecret: accessToken.tokenSecret
+        )
+        let feedViewModel = TwitterFeedViewModel(
+            service: feedService,
+            tokenWriter: TwitterTokenManager.shared
+        )
+        let feedViewController = FeedViewController(viewModel: feedViewModel)
+        window.rootViewController = UINavigationController(rootViewController: feedViewController)
     }
 
     // MARK: - Private methods

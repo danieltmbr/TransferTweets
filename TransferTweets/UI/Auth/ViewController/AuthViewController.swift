@@ -21,7 +21,7 @@ protocol AuthViewModel {
 
 // MARK: -
 
-final class AuthViewController: UIViewController {
+final class AuthViewController: UIViewController, ErrorPresenter {
 
     // MARK: Properties
 
@@ -49,16 +49,26 @@ final class AuthViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        loginButton.setTitle("Login with Twitter".localized(), for: .normal)
         setupBidings()
     }
 
     // MARK: - Private methods
 
     private func setupBidings() {
+
+        // Handle login button touch up inside
         loginButton.rx
             .controlEvent(.touchUpInside)
-            .debounce(0.5, scheduler: MainScheduler.asyncInstance)
+            .debounce(0.75, scheduler: MainScheduler.asyncInstance)
             .bind(to: viewModel.loginTouched)
+            .disposed(by: disposeBag)
+
+        // Display error if happens
+        viewModel.error
+            .drive(onNext: { [weak self] (error) in
+                self?.displayError(error)
+            })
             .disposed(by: disposeBag)
     }
 }

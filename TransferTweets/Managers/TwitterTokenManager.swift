@@ -16,7 +16,7 @@ final class TwitterTokenManager {
     /** Singleton object */
     static let shared = TwitterTokenManager()
     /** Current access token */
-    private let token = Variable<OauthAccessToken?>(nil)
+    private let token = Variable<Authentication>(.none)
 
     // MARK: - Initialisation
 
@@ -27,19 +27,15 @@ final class TwitterTokenManager {
 
 extension TwitterTokenManager: TokenManager {
 
-    var isAuthenticated: Observable<Bool> {
-        return token.asObservable().map { $0 != nil }
-    }
-
-    var accessToken: Observable<OauthAccessToken?> {
+    var authentication: Observable<Authentication> {
         return token.asObservable()
     }
 
     func setAccessToken(_ accessToken: OauthAccessToken) {
-        token.value = accessToken
+        token.value = .token(accessToken)
     }
 
     func clearAccessToken() {
-        token.value = nil
+        token.value = .none
     }
 }

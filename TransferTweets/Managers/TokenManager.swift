@@ -9,14 +9,14 @@
 import Foundation
 import RxSwift
 
-protocol AuthInfo {
-    /** Indicates if the user has been already authenticated */
-    var isAuthenticated: Observable<Bool> { get }
+enum Authentication {
+    case none
+    case token(OauthAccessToken)
 }
 
-protocol TokenReader: AuthInfo {
-    /** Returns OAuth access token if the user has been already authenticated */
-    var accessToken: Observable<OauthAccessToken?> { get }
+protocol AuthInfo {
+    /** Returns authentication state (either 'none' or an access token) */
+    var authentication: Observable<Authentication> { get }
 }
 
 protocol TokenWriter {
@@ -26,4 +26,4 @@ protocol TokenWriter {
     func clearAccessToken()
 }
 
-typealias TokenManager = TokenReader & TokenWriter
+typealias TokenManager = AuthInfo & TokenWriter

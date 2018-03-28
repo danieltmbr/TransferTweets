@@ -16,9 +16,9 @@ final class AuthCoordinator: Coordinator {
 
     let identifier: UUID = UUID()
 
-    private var children = [UUID: Coordinator]()
-
     private let window: UIWindow
+
+    private var children = [UUID: Coordinator]()
 
     // MARK: - Initialisation
 
@@ -26,12 +26,12 @@ final class AuthCoordinator: Coordinator {
         self.window = window
     }
 
-    // MARK: - Public methodsr
+    // MARK: - Public methods
 
     func start() {
         let authService = TwitterAuthService(
-            consumerKey: "QQt2eDN6L3sJg0ewa7alDRqAq",
-            consumerSecret: "juLldKBdnoY3Sqj8FsRWCAlEurtNe1n0u6FQRywcojabPRpNVB"
+            consumerKey: TwitterConsumerInfo.key,
+            consumerSecret: TwitterConsumerInfo.secret
         )
         let authViewModel = TwitterAuthViewModel(
             service: authService,

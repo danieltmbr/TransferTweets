@@ -21,18 +21,52 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZh-tO-fnn">
-                    <rect key="frame" x="134" y="318" width="107" height="30"/>
-                    <state key="normal" title="Login to Twitter"/>
-                </button>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="qLn-Xh-Z4p">
+                    <rect key="frame" x="107" y="213.5" width="160" height="240"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Icon" translatesAutoresizingMaskIntoConstraints="NO" id="07l-oW-wvE">
+                            <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="160" id="KXV-1V-7l8"/>
+                                <constraint firstAttribute="width" constant="160" id="pYP-DU-lkv"/>
+                            </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="30"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </imageView>
+                        <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EZh-tO-fnn">
+                            <rect key="frame" x="0.0" y="200" width="160" height="40"/>
+                            <color key="backgroundColor" red="0.0" green="0.72549019607843135" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="160" id="IzH-ys-g0P"/>
+                                <constraint firstAttribute="height" constant="40" id="PyP-hT-UNC"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <state key="normal" title="Login to Twitter">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="10"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </button>
+                    </subviews>
+                </stackView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="EZh-tO-fnn" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="D1p-Kg-Qwq"/>
-                <constraint firstItem="EZh-tO-fnn" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="qPS-zp-GSM"/>
+                <constraint firstItem="qLn-Xh-Z4p" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="oZI-YR-Suv"/>
+                <constraint firstItem="qLn-Xh-Z4p" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="xff-5v-fau"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <point key="canvasLocation" x="33.5" y="53.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="Icon" width="341" height="341"/>
+    </resources>
 </document>
