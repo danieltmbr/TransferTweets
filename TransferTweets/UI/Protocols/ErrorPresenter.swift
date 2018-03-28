@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Swifter
 
 protocol ErrorPresenter {
     func displayError(_ error: Error)
@@ -15,7 +16,14 @@ protocol ErrorPresenter {
 extension ErrorPresenter where Self: UIViewController {
 
     func displayError(_ error: Error) {
-        let message: String = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        let message: String
+        if let error = error as? SwifterError {
+            message = error.message
+        } else if let error = error as? LocalizedError {
+            message = error.errorDescription ?? error.localizedDescription
+        } else {
+            message = error.localizedDescription
+        }
 
         let alertController = UIAlertController(
             title: "We're really sorry, but".localized(),

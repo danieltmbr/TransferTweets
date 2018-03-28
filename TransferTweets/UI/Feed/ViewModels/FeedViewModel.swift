@@ -20,57 +20,71 @@ final class TwitterFeedViewModel {
 
     private let tokenWriter: TokenWriter
 
-    private var tweetList: [TweetCellModel] = []
+    private var tweetList: [Tweet] = []
 
     private let tweetChanges = Variable<TweetChanges>(([], .none))
 
     private let serviceError = PublishSubject<Error>()
 
     private let maximumNumberOfTweets: Int = 5
-
-    private let disposeBag = DisposeBag()
+    
+    private var connectionDisposable: Disposable?
 
     // MARK: - Initialisation
 
     init(service: FeedService, tokenWriter: TokenWriter) {
         self.service = service
         self.tokenWriter = tokenWriter
-        setupBidings()
+        connectToStream()
     }
 
     // MARK: - Private methods
-
-    func setupBidings() {
-//        service = TwitterFeedService(
-//            consumerKey: "QQt2eDN6L3sJg0ewa7alDRqAq",
-//            consumerSecret: "juLldKBdnoY3Sqj8FsRWCAlEurtNe1n0u6FQRywcojabPRpNVB",
-//            oauthToken: TwitterTokenManager.shared._accessToken!.accessToken,
-//            oauthTokenSecret: TwitterTokenManager.shared._accessToken!.tokenSecret)
-//        service?.openStream(track: ["transferwise", "crypto", "life", "photo"])
-//            .subscribe(onNext: { (tweet) in
-//                print(tweet)
-//            }, onError: { (error) in
-//                print(error)
-//            })
-//            .disposed(by: disposeBag)
+    
+    private func connectToStream() {
+        connectionDisposable?.dispose()
+        connectionDisposable = service.openStream(track: ["transferwise"])
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
+            .observeOn(SerialDispatchQueueScheduler(qos: .userInitiated))
+            .map { [weak self] tweetDto -> TweetChanges in
+                guard let `self` = self
+                    else { return ([], .none) }
+                let tweet = self.convert(tweetDto)
+                return self.insert(tweet: tweet)
+            }
+            .catchError { [weak self] (error) -> Observable<TweetChanges> in
+                guard let `self` = self
+                    else { return Observable<TweetChanges>.empty() }
+                self.serviceError.onNext(error)
+                return Observable<TweetChanges>.just((self.tweetList, .none))
+            }
+            .subscribe(onNext: { [weak self] tweetChanges in
+                self?.tweetChanges.value = tweetChanges
+            })
     }
 
-    private func insert(tweet: TweetDto) -> TweetChanges {
-        tweetList.insert(convert(tweet), at: 0)
+    private func insert(tweet: Tweet) -> TweetChanges {
+        // Filter duplications
+        guard !tweetList.contains(tweet)
+            else { return (tweetList, .none) }
+        // Calculate deleted indicies
         let numberOfTweets = tweetList.count
-        let inserted: [Int] = [0]
         var deleted: [Int] = []
-        if numberOfTweets > maximumNumberOfTweets {
-            for index in maximumNumberOfTweets..<numberOfTweets {
+        if numberOfTweets >= maximumNumberOfTweets {
+            for index in (maximumNumberOfTweets-1)..<numberOfTweets {
                 deleted.append(index)
                 tweetList.removeLast()
             }
         }
+        // Add insertion
+        let inserted: [Int] = [0]
+        tweetList.insert(tweet, at: 0)
+        // Return the completed list
         return (tweetList, .change(deleted: deleted, inserted: inserted))
     }
 
-    private func convert(_ tweetDto: TweetDto) -> TweetCellModel {
+    private func convert(_ tweetDto: TweetDto) -> Tweet {
         return Tweet(
+            id: tweetDto.id,
             name: tweetDto.user.name,
             userName: "@\(tweetDto.user.screenName)",
             text: tweetDto.text,
@@ -84,26 +98,19 @@ final class TwitterFeedViewModel {
 
 extension TwitterFeedViewModel: FeedViewModel {
 
-    var tweets: Driver<TweetChanges> {
-        return service.openStream(track: ["transferwise", "crypto", "life"])
-            .map { [weak self] tweet -> TweetChanges in
-                guard let `self` = self
-                    else { return ([], .reload) }
-                return self.insert(tweet: tweet)
-            }
-            .asDriver { [weak self] (error) -> Driver<TweetChanges> in
-                guard let `self` = self
-                    else { return Driver<TweetChanges>.empty() }
-                self.serviceError.onNext(error)
-                return Driver<TweetChanges>.just((self.tweetList, .none))
-        }
+    var tweets: Observable<TweetChanges> {
+        return tweetChanges.asObservable()
     }
 
-    var error: Driver<Error> {
-        return serviceError.asDriver(onErrorRecover: { Driver<Error>.just($0) })
+    var error: Observable<Error> {
+        return serviceError.asObservable()
     }
 
     func logout() {
         tokenWriter.clearAccessToken()
+    }
+    
+    func reconnect() {
+        connectToStream()
     }
 }

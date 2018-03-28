@@ -10,6 +10,7 @@ import Foundation
 
 enum TwitterAuthError: Error {
     case noAccessToken
+    case couldNotAuthorize
 }
 
 extension TwitterAuthError: LocalizedError {
@@ -17,6 +18,7 @@ extension TwitterAuthError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noAccessToken: return "error.twitterAuth.noAccessToken".localized()
+        case .couldNotAuthorize: return "error.twitterAuth.couldNotAuthorize".localized()
         }
     }
 }

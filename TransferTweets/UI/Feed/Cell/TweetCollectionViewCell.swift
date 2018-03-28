@@ -49,6 +49,8 @@ final class TweetCollectionViewCell: UICollectionViewCell, ExternalCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         setupTextLabel()
     }
 
@@ -100,10 +102,11 @@ extension TweetCollectionViewCell {
         if sizingWidthConstraint?.constant != width {
             sizingWidthConstraint?.constant = width
         }
-
         render(tweet: tweet)
+        layoutIfNeeded()
+        
         return self.systemLayoutSizeFitting(
-            UILayoutFittingCompressedSize,
+            CGSize(width: width, height: 0),
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .defaultLow
         )

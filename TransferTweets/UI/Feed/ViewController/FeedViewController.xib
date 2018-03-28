@@ -21,9 +21,9 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" prefetchingEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tNT-SR-5tW">
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="none" prefetchingEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tNT-SR-5tW">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" white="0.94999999999999996" alpha="1" colorSpace="calibratedWhite"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5zT-cE-TH4">
                         <size key="itemSize" width="50" height="50"/>
                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -36,7 +36,7 @@
                     </connections>
                 </collectionView>
             </subviews>
-            <color key="backgroundColor" white="0.96999999999999997" alpha="1" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.94999999999999996" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="tNT-SR-5tW" firstAttribute="bottom" secondItem="i5M-Pr-FkT" secondAttribute="bottom" id="5xH-qs-CKc"/>
                 <constraint firstItem="tNT-SR-5tW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ick-rt-WmI"/>

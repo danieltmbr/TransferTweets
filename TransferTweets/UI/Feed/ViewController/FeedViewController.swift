@@ -22,9 +22,11 @@ enum ChangeSet {
 
 protocol FeedViewModel {
     /** Tweet list and changes compared to previous */
-    var tweets: Driver<([TweetCellModel], ChangeSet)> { get }
+    var tweets: Observable<([TweetCellModel], ChangeSet)> { get }
     /** Stream error */
-    var error: Driver<Error> { get }
+    var error: Observable<Error> { get }
+    /** Close connection if available and try open a new stream. */
+    func reconnect()
     /** Handle logout button touched. */
     func logout()
 }
@@ -68,6 +70,14 @@ final class FeedViewController: UIViewController, ErrorPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavbar()
+        setupCollectionView()
+        setupBidings()
+    }
+
+    // MARK: - Private methods
+    
+    private func setupNavbar() {
         title = "Transfer Tweets".localized()
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "Logout".localized(),
@@ -75,42 +85,48 @@ final class FeedViewController: UIViewController, ErrorPresenter {
             target: self,
             action: #selector(logoutTouched)
         )
-        configureCollectionView()
-        setupBidings()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Reconnect".localized(),
+            style: .plain,
+            target: self,
+            action: #selector(reconnectTouched)
+        )
     }
 
-    // MARK: - Private methods
-
-    private func configureCollectionView() {
+    private func setupCollectionView() {
         tweetsCollectionView.registerCell(TweetCollectionViewCell.self)
     }
 
     private func setupBidings() {
         // Handle incoming tweets
         viewModel.tweets
-            .drive(onNext: { [weak self] (tweets, changes) in
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] (tweets, changes) in
                 self?.updateCollectionView(tweets: tweets, changes: changes)
             })
             .disposed(by: disposeBag)
         // Handle errors if happened
         viewModel.error
-            .drive(onNext: { [weak self] error in
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] error in
                 self?.displayError(error)
             })
             .disposed(by: disposeBag)
     }
 
     private func updateCollectionView(tweets: [TweetCellModel], changes: ChangeSet) {
-        self.tweets = tweets
         switch changes {
         case .change(let deleted, let inserted):
             tweetsCollectionView.performBatchUpdates({
+                self.tweets = tweets
                 self.tweetsCollectionView
                     .deleteItems(at: deleted.map { IndexPath(int: $0) } )
                 self.tweetsCollectionView
                     .insertItems(at: inserted.map { IndexPath(int: $0) } )
             })
-        case .reload: tweetsCollectionView.reloadData()
+        case .reload:
+            self.tweets = tweets
+            tweetsCollectionView.reloadData()
         case .none: break
         }
     }
@@ -118,6 +134,11 @@ final class FeedViewController: UIViewController, ErrorPresenter {
     @objc
     private func logoutTouched() {
         viewModel.logout()
+    }
+    
+    @objc
+    private func reconnectTouched() {
+        viewModel.reconnect()
     }
 }
 
@@ -142,10 +163,6 @@ extension FeedViewController: UICollectionViewDataSource {
 extension FeedViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return config.spacing
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return config.spacing
     }
 

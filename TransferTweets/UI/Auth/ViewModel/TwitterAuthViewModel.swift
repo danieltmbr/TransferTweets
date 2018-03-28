@@ -35,17 +35,17 @@ final class TwitterAuthViewModel {
     // MARK: - Private methods
 
     private func setupBidings() {
-        loginButtonTouchEvents.asObserver()
+        loginButtonTouchEvents.asObservable()
             .flatMapLatest { [weak self] _ -> Observable<OauthAccessToken> in
                 guard let `self` = self else { return Observable.empty() }
                 return self.service.login()
+                    .catchError { (error) -> Observable<OauthAccessToken> in
+                        self.loginError.onNext(error)
+                        return Observable.empty()
+                }
             }
-            .subscribe(
-                onNext: { [weak self] token in
-                    self?.tokenWriter.setAccessToken(token)
-                },
-                onError: { [weak self] error in
-                    self?.loginError.onNext(error)
+            .subscribe(onNext: { [weak self] token in
+                self?.tokenWriter.setAccessToken(token)
             })
             .disposed(by: disposeBag)
     }
@@ -55,8 +55,8 @@ final class TwitterAuthViewModel {
 
 extension TwitterAuthViewModel: AuthViewModel {
 
-    var error: Driver<Error> {
-        return loginError.asDriver(onErrorRecover: { Driver<Error>.just($0) })
+    var error: Observable<Error> {
+        return loginError.asObservable()
     }
 
     var loginTouched: AnyObserver<Void> {

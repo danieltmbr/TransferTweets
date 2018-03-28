@@ -9,6 +9,8 @@
 import Foundation
 
 struct Tweet: TweetCellModel {
+    
+    var id: Int
 
     var name: String
 
@@ -19,4 +21,10 @@ struct Tweet: TweetCellModel {
     var date: String
 
     var profileImageUrl: URL
+}
+
+extension Tweet: Equatable {
+    static func ==(lhs: Tweet, rhs: Tweet) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

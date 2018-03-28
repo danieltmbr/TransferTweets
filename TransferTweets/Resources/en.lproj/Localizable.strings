@@ -13,10 +13,12 @@
 // MARK: - Feed
 
 "Transfer Tweets" = "Transfer Tweets";
+"Reconnect" = "Reconnect";
 "Logout" = "Logout";
 
 // MARK: - Errors
 
 "error.default.title" = "We're really sorry, but";
 "error.default.ok" = "Never mind";
-"error.twitterAuth.noAccessToken" = "The authorization was not successful.";
+"error.twitterAuth.noAccessToken" = "the authorization was not successful.";
+"error.twitterAuth.couldNotAuthorize" = "the authorization was not went well.";

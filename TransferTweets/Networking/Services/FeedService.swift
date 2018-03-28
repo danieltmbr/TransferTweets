@@ -46,6 +46,7 @@ final class TwitterFeedService {
 
     private func stopStream() {
         stream?.stop()
+        stream = nil
     }
 }
 

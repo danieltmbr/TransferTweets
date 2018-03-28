@@ -14,7 +14,7 @@ import RxCocoa
 
 protocol AuthViewModel {
     /** Error occured during the login process. (output) */
-    var error: Driver<Error> { get }
+    var error: Observable<Error> { get }
     /** Handle login button touched. (input) */
     var loginTouched: AnyObserver<Void> { get }
 }
@@ -66,8 +66,10 @@ final class AuthViewController: UIViewController, ErrorPresenter {
 
         // Display error if happens
         viewModel.error
-            .drive(onNext: { [weak self] (error) in
-                self?.displayError(error)
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .utility))
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.displayError(TwitterAuthError.couldNotAuthorize)
             })
             .disposed(by: disposeBag)
     }
